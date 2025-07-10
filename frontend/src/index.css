@@ -3,5 +3,13 @@
 @tailwind utilities;
 
 body {
-  @apply bg-black text-white;
+  @apply bg-gradient-to-br from-black via-zinc-900 to-black text-white font-sans;
+}
+
+input, button {
+  @apply transition duration-200;
+}
+
+button:hover {
+  @apply scale-105;
 }
