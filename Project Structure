@@ -1,0 +1,17 @@
+movieflix/
+├── backend/
+│   ├── controllers/
+│   ├── models/
+│   ├── routes/
+│   ├── uploads/                # Stores uploaded videos
+│   ├── .env
+│   └── server.js
+├── frontend/
+│   ├── index.html
+│   ├── login.html
+│   ├── register.html
+│   ├── dashboard.html
+│   ├── movie.html
+│   └── style.css
+├── package.json
+├── README.md
