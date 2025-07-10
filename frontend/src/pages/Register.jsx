@@ -1,75 +1,55 @@
 import { useState } from "react"
-import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import API from "../services/api"
 
-const Register = () => {
-  const [form, setForm] = useState({ username: "", email: "", password: "" })
+export default function Login() {
   const navigate = useNavigate()
+  const [form, setForm] = useState({ email: "", password: "" })
   const [error, setError] = useState("")
 
   const handleChange = (e) => {
-    setForm((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }))
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
-  const handleRegister = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault()
     try {
-      await axios.post(`${API}/auth/register`, form)
-      navigate("/login")
+      const res = await API.post("/login", form)
+      localStorage.setItem("token", res.data.token)
+      navigate("/")
     } catch (err) {
-      setError(err.response?.data?.message || "Registration failed")
+      setError(err.response?.data?.message || "Login failed")
     }
   }
 
   return (
-    <div className="flex justify-center items-center h-screen bg-black">
-      <form onSubmit={handleRegister} className="bg-zinc-900 p-8 rounded shadow w-80">
-        <h2 className="text-2xl font-bold mb-4 text-center">Create MovieFlix Account</h2>
-        <input
-          type="text"
-          name="username"
-          placeholder="Username"
-          value={form.username}
-          onChange={handleChange}
-          className="w-full mb-3 p-2 rounded bg-zinc-800 border border-zinc-700 text-white"
-          required
-        />
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
-          className="w-full mb-3 p-2 rounded bg-zinc-800 border border-zinc-700 text-white"
-          required
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={handleChange}
-          className="w-full mb-4 p-2 rounded bg-zinc-800 border border-zinc-700 text-white"
-          required
-        />
-        <button
-          type="submit"
-          className="w-full bg-red-600 hover:bg-red-700 py-2 rounded text-white font-bold"
-        >
-          Register
-        </button>
-        {error && <p className="text-red-500 mt-2 text-sm text-center">{error}</p>}
-        <p className="mt-3 text-sm text-center">
-          Already have an account?{" "}
-          <a href="/login" className="text-red-400 hover:underline">Login</a>
-        </p>
-      </form>
-    </div>
+    <form onSubmit={handleLogin} className="space-y-4">
+      <h2 className="text-2xl font-bold text-center mb-4">Login to MovieFlix</h2>
+      <input
+        type="email"
+        name="email"
+        placeholder="Email"
+        value={form.email}
+        onChange={handleChange}
+        className="w-full p-2 rounded bg-zinc-900 border border-zinc-700 text-white"
+        required
+      />
+      <input
+        type="password"
+        name="password"
+        placeholder="Password"
+        value={form.password}
+        onChange={handleChange}
+        className="w-full p-2 rounded bg-zinc-900 border border-zinc-700 text-white"
+        required
+      />
+      <button className="w-full bg-red-600 hover:bg-red-700 py-2 rounded text-white font-bold">
+        Login
+      </button>
+      {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+      <p className="text-sm text-center mt-2">
+        Don’t have an account? <a href="/register" className="text-red-400 hover:underline">Register</a>
+      </p>
+    </form>
   )
 }
-
-export default Register
