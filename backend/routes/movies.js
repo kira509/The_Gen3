@@ -1,14 +1,15 @@
 import express from "express"
 import Movie from "../models/Movie.js"
 import jwt from "jsonwebtoken"
+import path from "path"
 import fs from "fs"
 
 const router = express.Router()
 
-// 🔐 Middleware to verify token
+// ✅ Token verification middleware
 const verify = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1]
-  if (!token) return res.status(401).json({ msg: "No token provided" })
+  if (!token) return res.status(401).json({ msg: "No token" })
 
   try {
     req.user = jwt.verify(token, process.env.JWT_SECRET)
@@ -18,20 +19,18 @@ const verify = (req, res, next) => {
   }
 }
 
-// ✅ Upload movie (text-only version, no video yet)
+// ✅ Upload movie via JSON (text-only, used by frontend)
 router.post("/", verify, async (req, res) => {
   if (!req.user.isAdmin) return res.status(403).json({ msg: "Not admin" })
 
-  const { title, description, category, thumbnail } = req.body
+  const { title, category, thumbnail } = req.body
 
-  if (!title || !category) {
+  if (!title || !category)
     return res.status(400).json({ msg: "Missing title or category" })
-  }
 
   try {
     const movie = await Movie.create({
       title,
-      description,
       category,
       thumbnail,
       uploadedAt: new Date()
@@ -40,21 +39,37 @@ router.post("/", verify, async (req, res) => {
     res.status(201).json({ msg: "Movie uploaded", movie })
   } catch (err) {
     console.error("Upload error:", err)
-    res.status(500).json({ msg: "Failed to upload movie" })
+    res.status(500).json({ msg: "Server error while uploading movie" })
   }
 })
 
-// 🎬 Get all movies
+// ✅ Upload movie with video file (optional advanced feature)
+router.post("/upload", verify, async (req, res) => {
+  if (!req.user.isAdmin) return res.status(403).json({ msg: "Not admin" })
+
+  const file = req.files?.video
+  if (!file) return res.status(400).json({ msg: "No video uploaded" })
+
+  const filePath = `uploads/${Date.now()}-${file.name}`
+  await file.mv(filePath)
+
+  const movie = await Movie.create({
+    title: req.body.title,
+    description: req.body.description,
+    category: req.body.category,
+    videoUrl: filePath
+  })
+
+  res.status(201).json({ msg: "Movie uploaded with video", movie })
+})
+
+// ✅ Get all movies
 router.get("/", async (req, res) => {
-  try {
-    const movies = await Movie.find().sort({ uploadedAt: -1 })
-    res.json(movies)
-  } catch (err) {
-    res.status(500).json({ msg: "Failed to fetch movies" })
-  }
+  const movies = await Movie.find().sort({ uploadedAt: -1 })
+  res.json(movies)
 })
 
-// 📽️ Stream video (if video streaming is added later)
+// ✅ Stream video (if using full upload)
 router.get("/watch/:id", async (req, res) => {
   const movie = await Movie.findById(req.params.id)
   if (!movie) return res.status(404).json({ msg: "Movie not found" })
@@ -81,4 +96,5 @@ router.get("/watch/:id", async (req, res) => {
 })
 
 export default router
+
 
