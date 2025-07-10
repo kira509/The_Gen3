@@ -6,25 +6,24 @@ import Home from "./pages/Home"
 function App() {
   return (
     <Router>
-      <div className="bg-black min-h-screen text-white font-sans">
+      <div className="min-h-screen bg-gradient-to-br from-black via-zinc-900 to-black text-white font-sans">
         {/* Navigation Bar */}
-        <nav className="bg-zinc-900 px-8 py-4 flex justify-between items-center border-b border-zinc-800">
-          <h1 className="text-xl font-bold text-red-500">🎬 MovieFlix</h1>
-          <div className="flex gap-6">
-            <Link to="/" className="hover:text-red-400 transition">Home</Link>
-            <Link to="/login" className="hover:text-red-400 transition">Login</Link>
-            <Link to="/register" className="hover:text-red-400 transition">Register</Link>
-          </div>
+        <nav className="flex justify-center gap-8 py-6 shadow-lg border-b border-zinc-800 bg-zinc-900/80 backdrop-blur-sm sticky top-0 z-50">
+          <Link to="/" className="text-lg font-semibold hover:text-red-500 transition duration-300">Home</Link>
+          <Link to="/login" className="text-lg font-semibold hover:text-red-500 transition duration-300">Login</Link>
+          <Link to="/register" className="text-lg font-semibold hover:text-red-500 transition duration-300">Register</Link>
         </nav>
 
         {/* Page Content */}
-        <div className="p-6">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-          </Routes>
-        </div>
+        <main className="flex justify-center items-center py-12 px-4">
+          <div className="w-full max-w-xl p-6 bg-zinc-800 rounded-2xl shadow-xl border border-zinc-700">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+            </Routes>
+          </div>
+        </main>
       </div>
     </Router>
   )
